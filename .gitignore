@@ -1,0 +1,16 @@
+# Ambiente virtuale Python
+venv/
+
+# File compilati Python
+__pycache__/
+*.pyc
+
+# Database SQLite locale
+*.db
+
+# File di configurazione VS Code
+.vscode/
+
+# File di sistema
+.DS_Store
+Thumbs.db
