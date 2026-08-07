@@ -1,12 +1,14 @@
 from fastapi import FastAPI
 from app.database import Base, engine
-from app import models  # importa tutti i modelli tramite __init__.py
+from app import models
+from app.routers import autenticazione
 
-# crea tutte le tabelle nel database (se non esistono già)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="API Gestione Clinica")
 
+app.include_router(autenticazione.router)
+
 @app.get("/")
-def root():
-    return {"message": "API Gestione Clinica - funzionante"}
+def home():
+    return {"messaggio": "API Gestione Clinica - funzionante"}
