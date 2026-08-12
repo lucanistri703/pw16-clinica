@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta, timezone
-from jose import jwt
+from jose import jwt, JWTError
 
 # chiave segreta per firmare i token (in produzione andrebbe tenuta fuori dal codice)
 SECRET_KEY = "chiave_segreta_da_cambiare_in_produzione"
@@ -17,3 +17,13 @@ def crea_token(id_utente: int, tipo_utente: str) -> str:
     }
     token = jwt.encode(dati, SECRET_KEY, algorithm=ALGORITMO)
     return token
+
+
+def decodifica_token(token: str):
+    """Verifica e decodifica un token JWT.
+    Restituisce il payload (dati) se valido, oppure None se non valido o scaduto."""
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITMO])
+        return payload
+    except JWTError:
+        return None
