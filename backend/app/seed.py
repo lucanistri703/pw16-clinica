@@ -9,7 +9,7 @@ from app.models.segreteria import Segreteria
 from app.auth.sicurezza import hash_password
 from datetime import date
 
-# assicura che le tabelle esistano
+
 Base.metadata.create_all(bind=engine)
 
 db = SessionLocal()
@@ -29,9 +29,6 @@ db.add_all([amb1, amb2, amb3])
 
 impostazioni = ImpostazioniClinica(limite_giorni=30, preavviso_cancellazione=2)
 db.add(impostazioni)
-
-# salva specializzazioni e ambulatori ora, così ottengono un id
-# (serve perché i medici sotto hanno bisogno di questi id)
 db.commit()
 
 

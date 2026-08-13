@@ -41,3 +41,34 @@ def utente_corrente(token: str = Depends(oauth2_scheme), db: Session = Depends(g
         raise errore
 
     return utente, tipo
+
+
+
+def solo_paziente(dati_utente = Depends(utente_corrente)):
+    utente, tipo = dati_utente
+    if tipo != "paziente":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Azione riservata ai pazienti",
+        )
+    return utente, tipo
+
+
+def solo_medico(dati_utente = Depends(utente_corrente)):
+    utente, tipo = dati_utente
+    if tipo != "medico":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Azione riservata ai medici",
+        )
+    return utente, tipo
+
+
+def solo_segreteria(dati_utente = Depends(utente_corrente)):
+    utente, tipo = dati_utente
+    if tipo != "segreteria":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Azione riservata alla segreteria",
+        )
+    return utente, tipo
