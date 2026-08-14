@@ -4,6 +4,7 @@ from app.database import get_db
 from app.schemas.paziente import RegistrazionePaziente, PazienteRisposta
 from app.models.paziente import Paziente
 from app.auth.sicurezza import hash_password
+from app.auth.dipendenze import solo_segreteria
 
 
 router = APIRouter(prefix="/pazienti", tags=["Pazienti"])
@@ -41,3 +42,13 @@ def registra_paziente(dati: RegistrazionePaziente, db: Session = Depends(get_db)
     db.refresh(nuovo_paziente)
 
     return nuovo_paziente
+
+
+
+@router.get("/", response_model=list[PazienteRisposta])
+def lista_pazienti(
+    dati_utente = Depends(solo_segreteria),
+    db: Session = Depends(get_db),
+):
+    pazienti = db.query(Paziente).all()
+    return pazienti
