@@ -7,7 +7,8 @@ from app.models.medico import Medico
 from app.models.paziente import Paziente
 from app.models.segreteria import Segreteria
 from app.auth.sicurezza import hash_password
-from datetime import date
+from datetime import date, time
+from app.models.orario_ricevimento import OrarioRicevimento
 
 
 Base.metadata.create_all(bind=engine)
@@ -53,6 +54,28 @@ medico2 = Medico(
     id_ambulatorio=amb2.id,
 )
 db.add_all([medico1, medico2])
+db.commit() 
+
+
+orario1 = OrarioRicevimento(
+    id_medico=medico1.id,
+    giorno_settimana=0,
+    ora_inizio=time(9, 0),
+    ora_fine=time(13, 0),
+)
+orario2 = OrarioRicevimento(
+    id_medico=medico1.id,
+    giorno_settimana=2,
+    ora_inizio=time(9, 0),
+    ora_fine=time(13, 0),
+)
+orario3 = OrarioRicevimento(
+    id_medico=medico2.id,
+    giorno_settimana=1,
+    ora_inizio=time(14, 0),
+    ora_fine=time(18, 0),
+)
+db.add_all([orario1, orario2, orario3])
 
 
 paziente1 = Paziente(
