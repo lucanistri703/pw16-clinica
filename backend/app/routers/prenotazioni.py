@@ -11,6 +11,7 @@ from app.models.prenotazione import Prenotazione
 from app.models.medico import Medico
 from app.models.specializzazione import Specializzazione
 from app.auth.dipendenze import utente_corrente, solo_paziente
+from app.models.impostazioni_clinica import ImpostazioniClinica
 
 
 router = APIRouter(prefix="/prenotazioni", tags=["Prenotazioni"])
@@ -101,5 +102,53 @@ def crea_prenotazione(
             status_code=status.HTTP_409_CONFLICT,
             detail="Orario non più disponibile",
         )
+
+    return prenotazione
+
+
+@router.patch("/{id_prenotazione}/cancella", response_model=PrenotazioneRisposta)
+def cancella_prenotazione(
+    id_prenotazione: int,
+    dati_utente = Depends(solo_paziente),
+    db: Session = Depends(get_db),
+):
+    paziente, tipo = dati_utente
+
+    prenotazione = db.query(Prenotazione).filter(
+        Prenotazione.id == id_prenotazione
+    ).first()
+
+    if prenotazione is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Prenotazione non trovata",
+        )
+
+    if prenotazione.id_paziente != paziente.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Non puoi cancellare una prenotazione non tua",
+        )
+
+    if prenotazione.cancellata:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Prenotazione già cancellata",
+        )
+
+    impostazioni = db.query(ImpostazioniClinica).first()
+    preavviso = impostazioni.preavviso_cancellazione
+    data_visita = prenotazione.fascia_oraria.data
+    giorni_mancanti = (data_visita - date.today()).days
+
+    if giorni_mancanti < preavviso:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"La cancellazione richiede almeno {preavviso} giorni di preavviso",
+        )
+
+    prenotazione.cancellata = True
+    db.commit()
+    db.refresh(prenotazione)
 
     return prenotazione
