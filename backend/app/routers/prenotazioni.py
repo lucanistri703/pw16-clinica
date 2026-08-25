@@ -12,6 +12,7 @@ from app.models.medico import Medico
 from app.models.specializzazione import Specializzazione
 from app.auth.dipendenze import utente_corrente, solo_paziente
 from app.models.impostazioni_clinica import ImpostazioniClinica
+from app.schemas.prenotazione import PrenotazioneDettagliata
 
 
 router = APIRouter(prefix="/prenotazioni", tags=["Prenotazioni"])
@@ -152,3 +153,35 @@ def cancella_prenotazione(
     db.refresh(prenotazione)
 
     return prenotazione
+
+
+@router.get("/mie", response_model=list[PrenotazioneDettagliata])
+def le_mie_prenotazioni(
+    dati_utente = Depends(solo_paziente),
+    db: Session = Depends(get_db),
+):
+    paziente, tipo = dati_utente
+
+    prenotazioni = db.query(Prenotazione).filter(
+        Prenotazione.id_paziente == paziente.id
+    ).all()
+
+    risultato = []
+    for p in prenotazioni:
+        fascia = p.fascia_oraria
+        medico = fascia.medico
+        risultato.append(PrenotazioneDettagliata(
+            id=p.id,
+            medico_nome=medico.nome,
+            medico_cognome=medico.cognome,
+            specializzazione=medico.specializzazione.nome,
+            ambulatorio=medico.ambulatorio.nome,
+            data=fascia.data,
+            ora_inizio=fascia.ora_inizio,
+            ora_fine=fascia.ora_fine,
+            nota_paziente=p.nota_paziente,
+            cancellata=p.cancellata,
+            da_segreteria=p.da_segreteria,
+        ))
+
+    return risultato
