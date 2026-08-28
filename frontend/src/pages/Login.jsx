@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errore, setErrore] = useState('')
+  const navigate = useNavigate()
 
   async function gestisciLogin(evento) {
     evento.preventDefault()
@@ -25,7 +27,13 @@ function Login() {
       localStorage.setItem('token', dati.access_token)
       localStorage.setItem('tipo_utente', dati.tipo_utente)
 
-      alert('Login riuscito! Tipo utente: ' + dati.tipo_utente)
+      if (dati.tipo_utente === 'paziente') {
+        navigate('/home-paziente')
+      } else if (dati.tipo_utente === 'segreteria') {
+        navigate('/home-paziente')
+      } else if (dati.tipo_utente === 'medico') {
+        navigate('/home-paziente')
+      }
 
     } catch (err) {
       setErrore('Errore di connessione al server')
