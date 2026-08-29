@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 function Registrazione() {
   const [nome, setNome] = useState('')
@@ -142,6 +142,9 @@ function Registrazione() {
             <button type="submit" className="btn btn-primary w-100">
               Registrati
             </button>
+            <p className="text-center mt-3">
+              Hai già un account? <Link to="/">Accedi</Link>
+            </p>
           </form>
         </div>
       </div>
