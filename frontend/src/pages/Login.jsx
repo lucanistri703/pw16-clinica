@@ -30,9 +30,9 @@ function Login() {
       if (dati.tipo_utente === 'paziente') {
         navigate('/home-paziente')
       } else if (dati.tipo_utente === 'segreteria') {
-        navigate('/home-paziente')
+        navigate('/home-segreteria')
       } else if (dati.tipo_utente === 'medico') {
-        navigate('/home-paziente')
+        setErrore('Area medico non ancora disponibile')
       }
 
     } catch (err) {

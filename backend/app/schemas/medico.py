@@ -11,6 +11,8 @@ class MedicoRisposta(BaseModel):
     attivo: bool
     id_specializzazione: int
     id_ambulatorio: int
+    specializzazione: str
+    ambulatorio: str
 
     model_config = {"from_attributes": True}
 

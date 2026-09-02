@@ -28,7 +28,23 @@ def lista_medici(
         query = query.filter(Medico.attivo == True)
 
     medici = query.all()
-    return medici
+
+    risultato = []
+    for m in medici:
+        risultato.append(MedicoRisposta(
+            id=m.id,
+            nome=m.nome,
+            cognome=m.cognome,
+            email=m.email,
+            telefono=m.telefono,
+            attivo=m.attivo,
+            id_specializzazione=m.id_specializzazione,
+            id_ambulatorio=m.id_ambulatorio,
+            specializzazione=m.specializzazione.nome,
+            ambulatorio=m.ambulatorio.nome,
+        ))
+
+    return risultato
 
 
 @router.post("/", response_model=MedicoRisposta, status_code=status.HTTP_201_CREATED)
@@ -95,4 +111,15 @@ def cambia_stato_medico(
     db.commit()
     db.refresh(medico)
 
-    return medico
+    return MedicoRisposta(
+        id=medico.id,
+        nome=medico.nome,
+        cognome=medico.cognome,
+        email=medico.email,
+        telefono=medico.telefono,
+        attivo=medico.attivo,
+        id_specializzazione=medico.id_specializzazione,
+        id_ambulatorio=medico.id_ambulatorio,
+        specializzazione=medico.specializzazione.nome,
+        ambulatorio=medico.ambulatorio.nome,
+    )
