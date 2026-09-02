@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 function PrenotazioneVisita() {
-  const navigate = useNavigate()
   const [specializzazioni, setSpecializzazioni] = useState([])
   const [specializzazioneSelezionata, setSpecializzazioneSelezionata] = useState('')
   const [errore, setErrore] = useState('')
@@ -13,6 +12,7 @@ function PrenotazioneVisita() {
   const [slotSelezionato, setSlotSelezionato] = useState('')
   const [nota, setNota] = useState('')
   const [successo, setSuccesso] = useState('')
+  const navigate = useNavigate()
 
   useEffect(() => {
     async function caricaSpecializzazioni() {

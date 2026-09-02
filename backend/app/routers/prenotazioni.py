@@ -163,7 +163,8 @@ def le_mie_prenotazioni(
     paziente, tipo = dati_utente
 
     prenotazioni = db.query(Prenotazione).filter(
-        Prenotazione.id_paziente == paziente.id
+    Prenotazione.id_paziente == paziente.id,
+    Prenotazione.cancellata == False,
     ).all()
 
     risultato = []
