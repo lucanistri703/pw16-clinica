@@ -56,12 +56,20 @@ function GestioneMedici() {
         <div className="col-md-10">
           <h2 className="text-center mb-4">Gestione medici</h2>
 
-          <button
-            className="btn btn-outline-secondary mb-3"
-            onClick={() => navigate('/home-segreteria')}
-          >
-            Torna alla home
-          </button>
+          <div className="d-flex gap-2 mb-3 justify-content-center">
+            <button
+              className="btn btn-outline-secondary"
+              onClick={() => navigate('/home-segreteria')}
+            >
+              Torna alla home
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => navigate('/gestione-medici/nuovo')}
+            >
+              Aggiungi medico
+            </button>
+          </div>
 
           {errore && (
             <div className="alert alert-danger" role="alert">

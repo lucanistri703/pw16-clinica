@@ -12,6 +12,21 @@ from app.auth.dipendenze import utente_corrente, solo_segreteria
 router = APIRouter(prefix="/medici", tags=["Medici"])
 
 
+def costruisci_medico_risposta(medico):
+    return MedicoRisposta(
+        id=medico.id,
+        nome=medico.nome,
+        cognome=medico.cognome,
+        email=medico.email,
+        telefono=medico.telefono,
+        attivo=medico.attivo,
+        id_specializzazione=medico.id_specializzazione,
+        id_ambulatorio=medico.id_ambulatorio,
+        specializzazione=medico.specializzazione.nome,
+        ambulatorio=medico.ambulatorio.nome,
+    )
+
+
 @router.get("/", response_model=list[MedicoRisposta])
 def lista_medici(
     specializzazione_id: int | None = None,
@@ -31,18 +46,7 @@ def lista_medici(
 
     risultato = []
     for m in medici:
-        risultato.append(MedicoRisposta(
-            id=m.id,
-            nome=m.nome,
-            cognome=m.cognome,
-            email=m.email,
-            telefono=m.telefono,
-            attivo=m.attivo,
-            id_specializzazione=m.id_specializzazione,
-            id_ambulatorio=m.id_ambulatorio,
-            specializzazione=m.specializzazione.nome,
-            ambulatorio=m.ambulatorio.nome,
-        ))
+        risultato.append(costruisci_medico_risposta(m))
 
     return risultato
 
@@ -73,6 +77,15 @@ def crea_medico(
             detail="Ambulatorio non valido",
         )
 
+    if db.query(Medico).filter(
+        Medico.id_ambulatorio == dati.id_ambulatorio,
+        Medico.attivo == True,
+    ).first():
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Ambulatorio già assegnato a un altro medico",
+        )
+
 
 
     nuovo_medico = Medico(
@@ -90,7 +103,7 @@ def crea_medico(
     db.commit()
     db.refresh(nuovo_medico)
 
-    return nuovo_medico
+    return costruisci_medico_risposta(nuovo_medico)
 
 
 @router.patch("/{id_medico}/stato", response_model=MedicoRisposta)
@@ -111,15 +124,4 @@ def cambia_stato_medico(
     db.commit()
     db.refresh(medico)
 
-    return MedicoRisposta(
-        id=medico.id,
-        nome=medico.nome,
-        cognome=medico.cognome,
-        email=medico.email,
-        telefono=medico.telefono,
-        attivo=medico.attivo,
-        id_specializzazione=medico.id_specializzazione,
-        id_ambulatorio=medico.id_ambulatorio,
-        specializzazione=medico.specializzazione.nome,
-        ambulatorio=medico.ambulatorio.nome,
-    )
+    return costruisci_medico_risposta(medico)

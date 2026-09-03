@@ -6,6 +6,7 @@ import PrenotazioneVisita from './pages/PrenotazioneVisita'
 import LeMiePrenotazioni from './pages/LeMiePrenotazioni'
 import HomeSegreteria from './pages/HomeSegreteria'
 import GestioneMedici from './pages/GestioneMedici'
+import NuovoMedico from './pages/NuovoMedico'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/le-mie-prenotazioni" element={<LeMiePrenotazioni />} />
         <Route path="/home-segreteria" element={<HomeSegreteria />} />
         <Route path="/gestione-medici" element={<GestioneMedici />} />
+        <Route path="/gestione-medici/nuovo" element={<NuovoMedico />} />
       </Routes>
     </BrowserRouter>
   )
