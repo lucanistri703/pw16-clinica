@@ -116,21 +116,29 @@ function GestioneMedici() {
                     )}
                   </td>
                   <td>
-                    {m.attivo ? (
+                    <div className="d-flex gap-2 justify-content-center">
+                      {m.attivo ? (
+                        <button
+                          className="btn btn-outline-secondary btn-sm"
+                          onClick={() => cambiaStatoMedico(m.id)}
+                        >
+                          Disattiva
+                        </button>
+                      ) : (
+                        <button
+                          className="btn btn-outline-success btn-sm"
+                          onClick={() => cambiaStatoMedico(m.id)}
+                        >
+                          Attiva
+                        </button>
+                      )}
                       <button
-                        className="btn btn-outline-secondary btn-sm"
-                        onClick={() => cambiaStatoMedico(m.id)}
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() => navigate('/gestione-medici/' + m.id + '/assenza')}
                       >
-                        Disattiva
+                        Nuova assenza
                       </button>
-                    ) : (
-                      <button
-                        className="btn btn-outline-success btn-sm"
-                        onClick={() => cambiaStatoMedico(m.id)}
-                      >
-                        Attiva
-                      </button>
-                    )}
+                    </div>
                   </td>
                 </tr>
               ))}
