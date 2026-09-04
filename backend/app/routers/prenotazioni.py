@@ -10,12 +10,31 @@ from app.models.fascia_oraria_visita import FasciaOrariaVisita
 from app.models.prenotazione import Prenotazione
 from app.models.medico import Medico
 from app.models.specializzazione import Specializzazione
-from app.auth.dipendenze import utente_corrente, solo_paziente
+from app.auth.dipendenze import utente_corrente, solo_paziente, solo_segreteria
 from app.models.impostazioni_clinica import ImpostazioniClinica
 from app.schemas.prenotazione import PrenotazioneDettagliata
+from app.models.paziente import Paziente
 
 
 router = APIRouter(prefix="/prenotazioni", tags=["Prenotazioni"])
+
+
+def costruisci_prenotazione_dettagliata(p):
+    fascia = p.fascia_oraria
+    medico = fascia.medico
+    return PrenotazioneDettagliata(
+        id=p.id,
+        medico_nome=medico.nome,
+        medico_cognome=medico.cognome,
+        specializzazione=medico.specializzazione.nome,
+        ambulatorio=medico.ambulatorio.nome,
+        data=fascia.data,
+        ora_inizio=fascia.ora_inizio,
+        ora_fine=fascia.ora_fine,
+        nota_paziente=p.nota_paziente,
+        cancellata=p.cancellata,
+        da_segreteria=p.da_segreteria,
+    )
 
 
 @router.get("/disponibilita", response_model=list[SlotDisponibile])
@@ -83,7 +102,7 @@ def crea_prenotazione(
             prenotata=True,
         )
         db.add(fascia)
-        db.flush()  # forza l'assegnazione dell'id alla fascia senza chiudere la transazione
+        db.flush()
 
         prenotazione = Prenotazione(
             id_fascia_oraria_visita=fascia.id,
@@ -169,20 +188,29 @@ def le_mie_prenotazioni(
 
     risultato = []
     for p in prenotazioni:
-        fascia = p.fascia_oraria
-        medico = fascia.medico
-        risultato.append(PrenotazioneDettagliata(
-            id=p.id,
-            medico_nome=medico.nome,
-            medico_cognome=medico.cognome,
-            specializzazione=medico.specializzazione.nome,
-            ambulatorio=medico.ambulatorio.nome,
-            data=fascia.data,
-            ora_inizio=fascia.ora_inizio,
-            ora_fine=fascia.ora_fine,
-            nota_paziente=p.nota_paziente,
-            cancellata=p.cancellata,
-            da_segreteria=p.da_segreteria,
-        ))
+        risultato.append(costruisci_prenotazione_dettagliata(p))
+
+    return risultato
+
+@router.get("/paziente/{id_paziente}", response_model=list[PrenotazioneDettagliata])
+def prenotazioni_paziente(
+    id_paziente: int,
+    dati_utente = Depends(solo_segreteria),
+    db: Session = Depends(get_db),
+):
+    paziente = db.query(Paziente).filter(Paziente.id == id_paziente).first()
+    if paziente is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Paziente non trovato",
+        )
+
+    prenotazioni = db.query(Prenotazione).filter(
+        Prenotazione.id_paziente == id_paziente
+    ).all()
+
+    risultato = []
+    for p in prenotazioni:
+        risultato.append(costruisci_prenotazione_dettagliata(p))
 
     return risultato

@@ -8,6 +8,8 @@ import HomeSegreteria from './pages/HomeSegreteria'
 import GestioneMedici from './pages/GestioneMedici'
 import NuovoMedico from './pages/NuovoMedico'
 import NuovaAssenza from './pages/NuovaAssenza'
+import GestionePazienti from './pages/GestionePazienti'
+import VediPrenotazioniPaziente from './pages/VediPrenotazioniPaziente'
 
 function App() {
   return (
@@ -22,6 +24,8 @@ function App() {
         <Route path="/gestione-medici" element={<GestioneMedici />} />
         <Route path="/gestione-medici/nuovo" element={<NuovoMedico />} />
         <Route path="/gestione-medici/:idMedico/assenza" element={<NuovaAssenza />} />
+        <Route path="/gestione-pazienti" element={<GestionePazienti />} />
+        <Route path="/gestione-pazienti/:idPaziente/prenotazioni" element={<VediPrenotazioniPaziente />} />
       </Routes>
     </BrowserRouter>
   )
