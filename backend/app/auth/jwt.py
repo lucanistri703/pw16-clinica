@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from jose import jwt, JWTError
 
-# chiave segreta per firmare i token (in produzione andrebbe tenuta fuori dal codice)
+
 SECRET_KEY = "chiave_segreta_da_cambiare_in_produzione"
 ALGORITMO = "HS256"
 DURATA_TOKEN_MINUTI = 60
